@@ -1,0 +1,4 @@
+-- Tables creation
+CREATE TABLE `aiboo`.`document` (`name` VARCHAR(125) NOT NULL , `type` VARCHAR(10) NOT NULL , `content` VARCHAR(10000) NOT NULL , `extraction_date` DATE NOT NULL , `valid` BOOLEAN NOT NULL , PRIMARY KEY (name) ) ENGINE = InnoDB;
+CREATE TABLE `aiboo`.`concept` (`name` VARCHAR(125) NOT NULL , PRIMARY KEY (name)) ENGINE = InnoDB;
+CREATE TABLE `aiboo`.`document_concept` (`document_name` VARCHAR(125) NOT NULL ,`concept_name` VARCHAR(125) NOT NULL ,`occurence` INT(11) NOT NULL ,PRIMARY KEY ( document_name,concept_name ), FOREIGN KEY fk_document (document_name) REFERENCES document(name),FOREIGN KEY fk_concept (concept_name) REFERENCES concept(name) ) ENGINE=INNODB;
