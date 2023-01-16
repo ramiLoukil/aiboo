@@ -4,7 +4,7 @@
 * install Mysql (XAMP can help in windows case)
 * install jdk 17 and set JAVA_HOME environnement variable
 * install maven 3.8.6 and set M2_HOME environnement variable
-* recuperate code source from [aiboo code source](https://toto) using git clone command
+* recuperate code source from [aiboo code source](https://github.com/ramiLoukil/aiboo) using git clone command
 * create the database aiboo using ressources/sql/0_aiboo_create_database.sql script
 * drop the Spring Batch tables using ressources/sql/1_spring_batch_schema-drop-mysql.sql script
 * create the Spring Batch tables using ressources/sql/2_spring_batch_schema-mysql.sql script
