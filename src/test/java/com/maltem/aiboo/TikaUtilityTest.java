@@ -11,7 +11,7 @@ import org.apache.tika.exception.TikaException;
         import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-        import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TikaUtilityTest {
 
@@ -109,5 +109,18 @@ public class TikaUtilityTest {
 
         stream.close();
     }
+
+    @Test
+    public void whenUsingParser_thenXlsxContentLanguageIsReturned()
+            throws IOException, TikaException, SAXException {
+        InputStream stream = this.getClass().getClassLoader()
+                .getResourceAsStream("Enquête SATISFACTION FORMATION .xlsx");
+        String language = TikaUtility.extractContentLanguage(stream);
+        System.out.println(language);
+
+        assertEquals("fr", language);
+        stream.close();
+    }
+
 
 }

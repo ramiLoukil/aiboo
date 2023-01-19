@@ -4,6 +4,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.exception.TikaException;
+import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AutoDetectParser;
@@ -52,6 +53,22 @@ public class TikaUtility {
         Tika tika = new Tika();
         String content = tika.parseToString(stream);
         return content;
+    }
+
+    public static String extractContentLanguage(InputStream stream)
+            throws IOException, TikaException, SAXException {
+
+        //Parser method parameters
+        Parser parser = new AutoDetectParser();
+        BodyContentHandler handler = new BodyContentHandler();
+        Metadata metadata = new Metadata();
+        //FileInputStream content = new FileInputStream(file);
+
+        //Parsing the given document
+        parser.parse(stream, handler, metadata, new ParseContext());
+
+        LanguageIdentifier object = new LanguageIdentifier(handler.toString());
+        return object.getLanguage();
     }
 
     public static Metadata extractMetadatatUsingFacade(InputStream stream)
