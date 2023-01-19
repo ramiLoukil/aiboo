@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -41,5 +42,10 @@ public class Document implements Serializable {
     private LocalDate extractionDate;
 
     private Boolean valid;
+
+    private String language;
+
+    @Transient
+    private Map<String,Long> tokensWithOccurence;
 
 }
