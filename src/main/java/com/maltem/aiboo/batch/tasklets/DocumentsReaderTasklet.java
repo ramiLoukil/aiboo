@@ -1,6 +1,8 @@
 package com.maltem.aiboo.batch.tasklets;
 
 import com.maltem.aiboo.batch.model.Document;
+import com.maltem.aiboo.utilities.TikaUtility;
+import org.apache.tika.exception.TikaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +45,8 @@ public class DocumentsReaderTasklet implements Tasklet, StepExecutionListener {
     private static List<Resource> fileResources = new ArrayList<>();
     private List<Document> documents;
     private Document document;
+
+    private TikaUtility tikaUtility;
     //private FileUtils fu;
 
     @Override
@@ -49,13 +54,15 @@ public class DocumentsReaderTasklet implements Tasklet, StepExecutionListener {
         /*lines = new ArrayList<>();
         fu = new FileUtils(
                 "taskletsvschunks/input/tasklets-vs-chunks.csv");*/
+
         documents= new ArrayList<>();
+        tikaUtility= new TikaUtility();
         logger.info("Documents Reader initialized.");
     }
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution,
-                                ChunkContext chunkContext) throws Exception {
+                                ChunkContext chunkContext) throws IOException,Exception {
         //Line line = fu.readLine();
 
         documentType=getType(chunkContext);
@@ -75,8 +82,16 @@ public class DocumentsReaderTasklet implements Tasklet, StepExecutionListener {
             document.setType(documentType);
             document.setExtractionDate(LocalDate.now());
             document.setValid(true);
-            //TO DO
-            document.setContent("Hello world from Paris!");
+            try {
+                document.setContent(tikaUtility.extractContentUsingFacade(file.getInputStream()));
+                document.setLanguage(tikaUtility.extractContentLanguage(file.getInputStream()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (TikaException e) {
+                throw new RuntimeException(e);
+            } catch (SAXException e) {
+                throw new RuntimeException(e);
+            }
             documents.add(document);
         });
 
