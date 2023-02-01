@@ -18,11 +18,12 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 @JobScope
 @Component
@@ -32,6 +33,10 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
             .getLogger(DocumentsWriterTasklet.class);
 
     private List<Document> documents;
+    @Value("${aiboo.numberOfConcepts}")
+    private int numberOfConcepts;
+    @Value("${aiboo.numberMinOfOccurence}")
+    private int numberMinOfOccurence;
     //private List<Concept> concepts;
 
     @Autowired
@@ -61,7 +66,27 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
         }*/
         documents.forEach(document-> {
             documentRepository.save(document);
-            Concept concept1= new Concept().setName("développeur");
+
+            Map<String, Long> sortedAndFiltredTokensWithOccurence = document.getTokensWithOccurence().entrySet()
+                    .stream()
+                    .filter(k -> k.getValue() > numberMinOfOccurence)
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .limit(numberOfConcepts)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                            (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+            Set<Concept> concepts= new HashSet<>();
+
+            sortedAndFiltredTokensWithOccurence.forEach((k,v)->{
+                Concept concept= new Concept().setName(k);
+                Set<ConceptOccurence> conceptOccurences = new HashSet<>();
+                conceptOccurences.add(new ConceptOccurence(new ConceptOccurenceId(document.getName(), concept.getName()), document, concept, v));
+                concept.setConceptOccurences(conceptOccurences);
+                concepts.add(concept);
+            });
+
+
+            /*Concept concept1= new Concept().setName("développeur");
             Set<ConceptOccurence> conceptOccurences1 = new HashSet<>();
             conceptOccurences1.add(new ConceptOccurence(new ConceptOccurenceId(document.getName(),concept1.getName()),document,concept1, 1));
             //conceptOccurences1.add(new ConceptOccurence(concept1, 2));
@@ -76,7 +101,7 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
 
             Set<Concept> concepts= new HashSet<>();
             concepts.add(concept1);
-            concepts.add(concept2);
+            concepts.add(concept2);*/
             conceptRepository.saveAll(concepts);
             ////document.setConcepts(concepts);
             //documentRepository.save(document);
