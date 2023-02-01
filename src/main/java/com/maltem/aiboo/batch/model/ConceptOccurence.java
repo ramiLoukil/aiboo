@@ -28,7 +28,7 @@ public class ConceptOccurence implements Serializable {
     @JoinColumn(name = "concept_name")
     private Concept concept;
 
-    private int occurence;
+    private Long occurence;
 
     /*public ConceptOccurence(Concept concept, int occurence) {
         this.concept = concept;

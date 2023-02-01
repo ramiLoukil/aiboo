@@ -1,6 +1,7 @@
 package com.maltem.aiboo.batch.tasklets;
 
 import com.maltem.aiboo.batch.model.Document;
+import com.maltem.aiboo.utilities.OpenNlpUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -45,14 +46,19 @@ public class DocumentsTokenizerTasklet implements Tasklet,StepExecutionListener 
             line.setAge(age);
         }*/
         documents.forEach(document-> {
-            document.setContent(document.getContent().toUpperCase());
+            document.setTokensWithOccurence(
+                    OpenNlpUtility.extractTokensWithOccurence(
+                        document.getContent(),
+                        document.getLanguage()
+                    )
+            );
         });
         return RepeatStatus.FINISHED;
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        logger.debug("Document Processor ended.");
+        logger.info("Document Tokenizer ended.");
         return ExitStatus.COMPLETED;
     }
 }
