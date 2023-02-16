@@ -29,7 +29,7 @@ public class OpenNlpUtilityTest {
 
         assertThat(tokens)
                 .contains("bob", "développeur", "java", "compétences", "organization"
-                        , "sprint", "planning", "développement", "us", ".", ":");
+                        , "sprint", "planning", "développement", "us", ".", ":","'");
     }
 
     @Test
