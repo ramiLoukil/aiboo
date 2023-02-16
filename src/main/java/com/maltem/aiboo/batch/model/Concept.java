@@ -20,6 +20,8 @@ public class Concept implements Serializable {
     @Id
     private String name;
 
+    private String babelSynsetId;
+
     /*@ManyToMany(mappedBy="concepts")
     private Set<Document> documents;*/
 

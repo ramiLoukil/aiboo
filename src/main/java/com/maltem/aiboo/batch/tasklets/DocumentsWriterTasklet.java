@@ -6,6 +6,7 @@ import com.maltem.aiboo.batch.model.ConceptOccurenceId;
 import com.maltem.aiboo.batch.model.Document;
 import com.maltem.aiboo.batch.repository.ConceptRepository;
 import com.maltem.aiboo.batch.repository.DocumentRepository;
+import it.uniroma1.lcl.babelnet.BabelSynset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -21,8 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import com.maltem.aiboo.utilities.BabelNetUtility;
 
 
 @JobScope
@@ -37,6 +41,9 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
     private int numberOfConcepts;
     @Value("${aiboo.numberMinOfOccurence}")
     private int numberMinOfOccurence;
+
+    @Value("${aiboo.domain}")
+    private String domain;
     //private List<Concept> concepts;
 
     @Autowired
@@ -46,12 +53,16 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
     private ConceptRepository conceptRepository;
     //private FileUtils fu;
 
+    @Autowired
+    private BabelNetUtility babelNetUtility;
+
     @Override
     public void beforeStep(StepExecution stepExecution) {
         ExecutionContext executionContext = stepExecution
                 .getJobExecution()
                 .getExecutionContext();
         this.documents = (List<Document>) executionContext.get("documents");
+        //this.babelNetUtility=new BabelNetUtility();
         //this.concepts = new ArrayList();
         //fu = new FileUtils("CV_SCORES.csv");
         logger.info("Documents Writer initialized.");
@@ -79,29 +90,17 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
 
             sortedAndFiltredTokensWithOccurence.forEach((k,v)->{
                 Concept concept= new Concept().setName(k);
+                try {
+                    String babelsetId = babelNetUtility.extractFirstSynsetIdFromWordByDomainAndLang(k, domain, document.getLanguage());
+                    concept.setBabelSynsetId(babelsetId) ;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 Set<ConceptOccurence> conceptOccurences = new HashSet<>();
                 conceptOccurences.add(new ConceptOccurence(new ConceptOccurenceId(document.getName(), concept.getName()), document, concept, v));
                 concept.setConceptOccurences(conceptOccurences);
                 concepts.add(concept);
             });
-
-
-            /*Concept concept1= new Concept().setName("développeur");
-            Set<ConceptOccurence> conceptOccurences1 = new HashSet<>();
-            conceptOccurences1.add(new ConceptOccurence(new ConceptOccurenceId(document.getName(),concept1.getName()),document,concept1, 1));
-            //conceptOccurences1.add(new ConceptOccurence(concept1, 2));
-            concept1.setConceptOccurences(conceptOccurences1);
-
-
-            Concept concept2= new Concept().setName("java");
-            Set<ConceptOccurence> conceptOccurences2 = new HashSet<>();
-            conceptOccurences2.add(new ConceptOccurence(new ConceptOccurenceId(document.getName(),concept2.getName()),document,concept2, 2));
-            //conceptOccurences2.add(new ConceptOccurence(concept2, 2));
-            concept2.setConceptOccurences(conceptOccurences2);
-
-            Set<Concept> concepts= new HashSet<>();
-            concepts.add(concept1);
-            concepts.add(concept2);*/
             conceptRepository.saveAll(concepts);
             ////document.setConcepts(concepts);
             //documentRepository.save(document);

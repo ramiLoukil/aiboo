@@ -6,10 +6,7 @@ import org.springframework.util.ResourceUtils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -61,7 +58,17 @@ public class OpenNlpUtility {
                 .tokenize(text);
 
         List<String> tokensWithoutStopWords = new LinkedList<>(Arrays.asList(tokens));
+        tokensWithoutStopWords = tokensWithoutStopWords.stream()
+                                .map(t->t.toLowerCase())
+                                .collect(Collectors.toList());
         tokensWithoutStopWords.removeAll(stopwords);
+        //remove specific words from tokens list
+        tokensWithoutStopWords.removeAll(Collections.singleton("."));
+        tokensWithoutStopWords.removeAll(Collections.singleton("·"));
+        tokensWithoutStopWords.removeAll(Collections.singleton(":"));
+        tokensWithoutStopWords.removeAll(Collections.singleton(","));
+        tokensWithoutStopWords.removeAll(Collections.singleton("'"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("’"));
 
         Map<String, Long> tokensWithOccurence = tokensWithoutStopWords
                 .stream()
