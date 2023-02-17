@@ -49,9 +49,10 @@ public class OpenNlpUtility {
                 .tokenize(text);
 
         List<String> tokensWithoutStopWords = new LinkedList<>(Arrays.asList(tokens));
-        tokensWithoutStopWords = tokensWithoutStopWords.stream()
-                                .map(t->t.toLowerCase())
-                                .collect(Collectors.toList());
+        tokensWithoutStopWords = tokensWithoutStopWords
+                .stream()
+                .map(t->t.toLowerCase())
+                .collect(Collectors.toList());
         tokensWithoutStopWords.removeAll(stopwords);
         //remove specific words from tokens list
         tokensWithoutStopWords.removeAll(Collections.singleton("."));
