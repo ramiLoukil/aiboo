@@ -6,7 +6,6 @@ import com.maltem.aiboo.batch.model.ConceptOccurenceId;
 import com.maltem.aiboo.batch.model.Document;
 import com.maltem.aiboo.batch.repository.ConceptRepository;
 import com.maltem.aiboo.batch.repository.DocumentRepository;
-import it.uniroma1.lcl.babelnet.BabelSynset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -44,14 +43,12 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
 
     @Value("${aiboo.domain}")
     private String domain;
-    //private List<Concept> concepts;
 
     @Autowired
     private DocumentRepository documentRepository;
 
     @Autowired
     private ConceptRepository conceptRepository;
-    //private FileUtils fu;
 
     @Autowired
     private BabelNetUtility babelNetUtility;
@@ -71,10 +68,7 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
     @Override
     public RepeatStatus execute(StepContribution stepContribution,
                                 ChunkContext chunkContext) throws Exception {
-        /*for (Line line : lines) {
-            fu.writeLine(line);
-            logger.debug("Wrote line " + line.toString());
-        }*/
+
         documents.forEach(document-> {
             documentRepository.save(document);
 
@@ -102,18 +96,14 @@ public class DocumentsWriterTasklet implements Tasklet, StepExecutionListener {
                 concepts.add(concept);
             });
             conceptRepository.saveAll(concepts);
-            ////document.setConcepts(concepts);
-            //documentRepository.save(document);
         });
 
-        //documentRepository.saveAll(documents);
         return RepeatStatus.FINISHED;
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        //fu.closeWriter();
-        logger.info("Lines Writer ended.");
+        logger.info("Documents Writer ended.");
         return ExitStatus.COMPLETED;
     }
 }

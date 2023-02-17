@@ -1,11 +1,8 @@
 package com.maltem.aiboo.utilities;
 
 import opennlp.tools.tokenize.SimpleTokenizer;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,13 +15,7 @@ public class OpenNlpUtility {
     static private List<String> stopwords;
 
     private static void extractStopWords(String language) throws IOException {
-        //stopwords = Files.readAllLines(Paths.get("classpath:stop_words_french.txt"));
-        //stopwords = Files.readAllLines(Paths.get(getClass().getResource("stop_words_french.txt").toURI()));
-        //File stopWordsFile = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "stop_words_french.txt");
         InputStream inputStream = OpenNlpUtility.class.getClassLoader().getResourceAsStream("stop_words_"+language+".txt");
-        ///File stopWordsFile=new File(is);
-        ///stopwords = Files.readAllLines(Paths.get(stopWordsFile.toURI()));
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         stopwords = reader.lines().collect(Collectors.toList());
     }

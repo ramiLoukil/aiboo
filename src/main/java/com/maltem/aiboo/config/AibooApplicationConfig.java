@@ -20,45 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableBatchProcessing
 @EnableCaching
 public class AibooApplicationConfig {
-    /*@Autowired
-    private JobBuilderFactory jobs;
 
-    @Autowired
-    private StepBuilderFactory steps;
-
-    @Bean
-    protected Step readLines(LinesReader linesReader) {
-        return steps
-                .get("readLines")
-                .tasklet(linesReader)
-                .build();
-    }
-
-    @Bean
-    protected Step processLines(LinesProcessor linesProcessor) {
-        return steps
-                .get("processLines")
-                .tasklet(linesProcessor)
-                .build();
-    }
-
-    @Bean
-    protected Step writeLines(LinesWriter linesWriter) {
-        return steps
-                .get("writeLines")
-                .tasklet(linesWriter)
-                .build();
-    }
-
-    @Bean
-    public Job job(Step readLines,Step processLines,Step writeLines) {
-        return jobs
-                .get("taskletsJob")
-                .start(readLines)
-                .next(processLines)
-                .next(writeLines)
-                .build();
-    }*/
     private AibooJobListener aibooJobListener;
 
     public AibooApplicationConfig(AibooJobListener aibooJobListener) {

@@ -13,7 +13,6 @@ public class BabelNetUtilityTest {
     @Test
     public void given_word_and_lang_when_conceptualize_then_synsets_are_detected() throws IOException {
         String firstSynsetID= new BabelNetUtility().extractFirstSynsetIdFromWordByDomainAndLang("java","COMPUTING", "en");
-        //String firstSynsetID=babelSynset.get().getId().toString();
         System.out.println(firstSynsetID);
         assertThat(firstSynsetID).isNotNull();
     }

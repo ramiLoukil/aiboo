@@ -32,19 +32,13 @@ public class DocumentsTokenizerTasklet implements Tasklet,StepExecutionListener 
                 .getJobExecution()
                 .getExecutionContext();
         this.documents = (List<Document>) executionContext.get("documents");
-        logger.info("Documents Processor initialized.");
+        logger.info("Documents Tokenizer initialized.");
     }
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution,
                                 ChunkContext chunkContext) throws Exception {
-        /*for (Line line : lines) {
-            long age = ChronoUnit.YEARS.between(
-                    line.getDob(),
-                    LocalDate.now());
-            logger.debug("Calculated age " + age + " for line " + line.toString());
-            line.setAge(age);
-        }*/
+
         documents.forEach(document-> {
             document.setTokensWithOccurence(
                     OpenNlpUtility.extractTokensWithOccurence(
@@ -58,7 +52,7 @@ public class DocumentsTokenizerTasklet implements Tasklet,StepExecutionListener 
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        logger.info("Document Tokenizer ended.");
+        logger.info("Documents Tokenizer ended.");
         return ExitStatus.COMPLETED;
     }
 }

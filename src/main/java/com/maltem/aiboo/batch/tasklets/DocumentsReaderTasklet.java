@@ -47,14 +47,9 @@ public class DocumentsReaderTasklet implements Tasklet, StepExecutionListener {
     private Document document;
 
     private TikaUtility tikaUtility;
-    //private FileUtils fu;
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        /*lines = new ArrayList<>();
-        fu = new FileUtils(
-                "taskletsvschunks/input/tasklets-vs-chunks.csv");*/
-
         documents= new ArrayList<>();
         tikaUtility= new TikaUtility();
         logger.info("Documents Reader initialized.");
@@ -63,10 +58,9 @@ public class DocumentsReaderTasklet implements Tasklet, StepExecutionListener {
     @Override
     public RepeatStatus execute(StepContribution stepContribution,
                                 ChunkContext chunkContext) throws IOException,Exception {
-        //Line line = fu.readLine();
 
         documentType=getType(chunkContext);
-        //Recuperate the list of Documents of specified type (AO or CV)
+        //Recuperate the list of Documents of specified type (AO or CV or Other)
         try (Stream<Path> files = Files.list(Paths.get(input+ File.separator+ documentType))) {
             fileResources = files
                     .map(FileSystemResource::new)
@@ -95,17 +89,11 @@ public class DocumentsReaderTasklet implements Tasklet, StepExecutionListener {
             documents.add(document);
         });
 
-        /*while (line != null) {
-            lines.add(line);
-            logger.debug("Read line: " + line.toString());
-            line = fu.readLine();
-        }*/
         return RepeatStatus.FINISHED;
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        //fu.closeReader();
         stepExecution
                 .getJobExecution()
                 .getExecutionContext()
