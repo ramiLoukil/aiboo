@@ -5,6 +5,7 @@ import opennlp.tools.tokenize.SimpleTokenizer;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -54,13 +55,8 @@ public class OpenNlpUtility {
                 .map(t->t.toLowerCase())
                 .collect(Collectors.toList());
         tokensWithoutStopWords.removeAll(stopwords);
-        //remove specific words from tokens list
-        tokensWithoutStopWords.removeAll(Collections.singleton("."));
-        tokensWithoutStopWords.removeAll(Collections.singleton("·"));
-        tokensWithoutStopWords.removeAll(Collections.singleton(":"));
-        tokensWithoutStopWords.removeAll(Collections.singleton(","));
-        tokensWithoutStopWords.removeAll(Collections.singleton("'"));
-        tokensWithoutStopWords.removeAll(Collections.singleton("’"));
+        //remove special words from tokens list
+        removeSpecialTokens(tokensWithoutStopWords);
 
         Map<String, Long> tokensWithOccurence = tokensWithoutStopWords
                 .stream()
@@ -70,6 +66,23 @@ public class OpenNlpUtility {
         return tokensWithOccurence;
     }
 
-
+    private static void removeSpecialTokens(List<String> tokensWithoutStopWords) {
+        tokensWithoutStopWords.removeAll(Collections.singleton("."));
+        tokensWithoutStopWords.removeAll(Collections.singleton("·"));
+        tokensWithoutStopWords.removeAll(Collections.singleton(":"));
+        tokensWithoutStopWords.removeAll(Collections.singleton(","));
+        tokensWithoutStopWords.removeAll(Collections.singleton("'"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("’"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("("));
+        tokensWithoutStopWords.removeAll(Collections.singleton(")"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("/"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("☐"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("☒"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("-"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("–"));
+        tokensWithoutStopWords.removeAll(Collections.singleton("•"));
+        //remove digits tokens
+        tokensWithoutStopWords.removeIf(Pattern.compile("\\d").asPredicate());
+    }
 }
 
